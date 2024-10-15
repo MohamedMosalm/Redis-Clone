@@ -165,7 +165,7 @@ func (v Value) marshalBulk() []byte {
 	bytes = append(bytes, strconv.Itoa(len(v.bulk))...)
 	bytes = append(bytes, '\r', '\n')
 
-	bytes = append(bytes, v.str...)
+	bytes = append(bytes, v.bulk...)
 	bytes = append(bytes, '\r', '\n')
 	return bytes
 }
