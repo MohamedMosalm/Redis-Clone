@@ -16,11 +16,21 @@ func main() {
 		return
 	}
 
-	conn, err := l.Accept()
-	if err != nil {
-		fmt.Println(err)
-		return
+	defer l.Close()
+
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		go handleConnection(conn)
 	}
+
+}
+
+func handleConnection(conn net.Conn) {
 
 	defer conn.Close()
 
