@@ -18,6 +18,13 @@ func main() {
 
 	defer l.Close()
 
+	aof, err := NewAof("database.aof")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer aof.Close()
+
 	for {
 		conn, err := l.Accept()
 		if err != nil {
@@ -25,12 +32,12 @@ func main() {
 			return
 		}
 
-		go handleConnection(conn)
+		go handleConnection(conn, aof)
 	}
 
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, aof *Aof) {
 
 	defer conn.Close()
 
@@ -62,6 +69,10 @@ func handleConnection(conn net.Conn) {
 			fmt.Println("Invalid command: ", command)
 			writer.Write(Value{typ: "string", str: ""})
 			continue
+		}
+
+		if command == "SET" || command == "HSET" || command == "MSET" {
+			aof.Write(val)
 		}
 
 		result := handler(args)
